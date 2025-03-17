@@ -3,13 +3,27 @@ local M = {}
 local quotes = require("quote-lines")
 
 --- Returns quote index according to selected day
----@param day integer
+---@param day_of_year integer
 ---@return string
-local function get_quote(day)
-  local group_size = 32
-  local groups = #quotes / group_size
-  local group_index = math.random(groups)
-  local index = group_index * group_size + group_size % day
+local function get_quote(day_of_year)
+  local month_group_size = 31
+  local quotes_len = #quotes
+
+  local month_numbers = math.floor(quotes_len / month_group_size)
+  local month_number = math.random(month_numbers)
+  local month_index = month_number - 1;
+
+  local month_index_group_size = month_group_size
+  if month_number == month_numbers then
+    month_group_size = quotes_len % month_group_size
+  end
+  if month_index_group_size <= 0 then
+    month_group_size = month_group_size
+  end
+
+  local day_offset = day_of_year % month_group_size;
+
+  local index = month_index * month_group_size + day_offset
 
   return quotes[index]
 end
